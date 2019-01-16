@@ -126,7 +126,7 @@ kable(descriptive_lapop, caption = "LAPOP Database", "latex", booktabs = T) %>% 
 ## Findings/Results
 ### _LAPOP Data_
 #### LGBT
-An important question^[The survey of 2010 is available here: <http://datasets.americasbarometer.org/database/files/17600748482010_Brasil_Questionnaire_Portuguese.pdf>], first, is to know if Brazilians would agree that a homosexual run for office on elections and, fortunately, LAPOP (public opinion) has that on its survey: _do you approve or disapprove that homosexuals run for office?_^[Question code is _d5_.], it is a scale from 1 to 10, which the first means that they _strongly disapprove_, and the second that they _strongly approve_. The descriptive data on graph 1 does not show differences among men and women, both seem to have the same opinion. However, when this data is crossed in a chi square test, as shown on table 1, the p-value is significant (0.013) and 9 degrees of freedom. 
+An important question^[The survey of 2010 is available here: <http://datasets.americasbarometer.org/database/files/17600748482010_Brasil_Questionnaire_Portuguese.pdf>], first, is to know if Brazilians would agree that a homosexual run for office on elections and, fortunately, LAPOP (public opinion) has that on its survey: _do you approve or disapprove that homosexuals run for office?_^[Question code is _d5_.], it is a scale from 1 to 10, which the first means that they _strongly disapprove_, and the second that they _strongly approve_. The descriptive data on graph 1 does not show differences among men and women, both seem to have the same opinion. However, when this data is crossed in a chi square test, as shown on table 3, the p-value is significant (0.013) and 9 degrees of freedom. 
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 library(ggplot2)
@@ -158,7 +158,7 @@ chiTable <- data.frame(Coefficients = c("X-Squared", "P-Value","df", "N"),
 kable(chiTable, caption = "Chi-Square")
 ```
 
-Table 1 is a chi-square test whereupon I used the variables described on graph 1; this test was chosen due to its utility to compare different groups, which, in this model is between men and women. As seen above, p-value was significant with 9 degrees of freedom, which means the null hypothesis is rejected and there is a relationship between gender and agreement about homosexuals running for office.
+Again, table 3 is a chi-square test whereupon I used the variables described on graph 1; this test was chosen due to its utility to compare different groups, which, in this model is between men and women. As seen above, p-value was significant with 9 degrees of freedom, which means the null hypothesis is rejected and there is a relationship between gender and agreement about homosexuals running for office.
 
 Despite that, Brazilians seem to have something against the civil union of people of the same sex. According to the data, the majority of men and women _strongly disapprove_ same sex civil union ^[Question code: _d6_]; as graph 2 shows, women are more sympathetic with this idea than men, but when we go to the number of disagreement, it increases on both sexes.
 
@@ -318,7 +318,7 @@ ggplot() +
 ### _PELA Data_
 #### LGBT
 
-On the survey about the deputies in Brazil, there is only one question focused on LGBTs in Brazil: if they disapprove or approve homosexuals the right to get married. Although the number of female deputies is way too low, they approve more with same sex marriage than man; male deputies, however, _strongly disapprove_ that homosexuals have this right. Graph 8 details those numbers better.
+On the survey about the deputies in Brazil, there is only one question focused on LGBTs in Brazil: if they disapprove or approve homosexuals the right to get married. Although the number of female deputies is way too low, they approve more with same sex marriage than man; male deputies, however, _strongly disapprove_ that homosexuals have this right. Graph 8 details those numbers better. Statistically, the chi-square test, on table 4, indicates that there are no differences among female and male deputies, since p-value is 0.078, with 9 degrees of freedom, so the null hypothesis can not be rejected, which means these variables are not associated.
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 library(haven)
@@ -339,11 +339,8 @@ ggplot(pela2010, aes(VAL1)) + geom_bar(aes(fill=SOCD4)) +
   theme(legend.position="none")
 ```
 
-Statistically, the chi-square test, on table 2, indicates that there are no differences among female and male deputies, since p-value is 0.078, with 9 degrees of freedom, so the null hypothesis can not be rejected, which means these variables are not associated.
-
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 chi <- chisq.test(pela2010$SOCD4, pela2010$VAL1, correct = FALSE)
-chi
 library(knitr)
 chiTable <- data.frame(Coefficients = c("X-Squared", "P-Value","df", "N"),
                        Value = c(15.493, 0.078, 9, 129))
@@ -505,36 +502,23 @@ As discussed above, my model concentrates between two important characteristics 
 
 #### Regression Assumptions
 
-Table 3 shows the regression results, and it indicates a high significance on p-value, since it was low than 0.05; also, the model explains 3% (Adjusted R2 = 0.035)of the public answer to same sex marriage.
-```{r, echo=FALSE, message=FALSE, warning=FALSE}
-library(haven)
-library(pander)
-lapop2010 <- read_stata("~/Downloads/Analise de dados/LAPOP_2010")
-# Transform independent variables(categorical variables) into factor 
-lapop <- lapop2010 # to change the database name
-lapop$l1 <- factor(lapop$l1) # ideology
-lapop$q5a <- factor(lapop$q5a) # frequency of religious services
-regres <- lm(d6 ~ l1 + q5a, data = lapop) # regression formula
-library(knitr)
-regress <- data.frame(Observations = c(1743),
-                      Residual_Std._Error = c(3.405),
-                      R2 = c(0.04232),
-                      Adjusted_R2 = c(0.03512),
-                      p_value = c("9.541e-11"))
-kable(regress, caption = "Regression Results")
-```
+The regression results (presented after discussing the assumptions), and it indicates a high significance on p-value, since it was low than 0.05; also, the model explains 3% (Adjusted R2 = 0.035)of the public answer to same sex marriage.
 
-Before understanding better these results, however, the regression's assumptions must be checked:
+Before understanding better the results, however, the regression's assumptions must be checked:
 
 __Linearity__
 
 The model equation does indeed represent a linear regression:
 
+
 \centerline{Marriage approval(Y)=a+(B1Ideology(X1)) + (B2Frequency of religious services(X1))}
+
+In other words, the assumption is satisfied for the model
 
 __Residuals__
 
-This assumption indicates that the mean of residuals must be zero (or very close). The test below shows that this assumption is true for the model, since the mean is close to zero (table 4).
+This assumption indicates that the mean of residuals must be zero (or very close). The test below shows that this assumption is true for the model, since the mean is close to zero (table 5). It means that the model does not violate this assumption.
+
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 library(haven)
 library(pander)
@@ -545,14 +529,16 @@ lapop$l1 <- factor(lapop$l1) # ideology
 lapop$q5a <- factor(lapop$q5a) # frequency of religious services
 regres <- lm(d6 ~ l1 + q5a, data = lapop) # regression formula
 # The mean of residuals is (close to) zero
-library(knitr)
+library(pander)
 resi_mean <- data.frame(Residual_mean = c("8.354e-16"))
-kable(resi_mean, caption = "Residual Mean")
+pander(resi_mean, caption = "Residual Mean")
 ```
+
 
 __Homoscedasticity__
 
-The model does not violate homoscedasticity assumption, as table NUMERO below shows; p=value is higher than 0.05, which means I cannot reject the null hypothesis and infer that heteroscedasticity is not indeed present (table 5).
+The model does not violate homoscedasticity assumption, as table 6 shows; p=value is higher than 0.05, which means I cannot reject the null hypothesis and infer that heteroscedasticity is not indeed present.
+
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 library(haven)
 library(car)
@@ -563,16 +549,19 @@ lapop$l1 <- factor(lapop$l1) # ideology
 lapop$q5a <- factor(lapop$q5a) # frequency of religious services
 regres <- lm(d6 ~ l1 + q5a, data = lapop) # regression formula
 # Evaluate homoscedasticity
-ncvTest(regres) # p-value is more than 0.05 -> homocedasticity not violated
-library(knitr)
+homo.test <- ncvTest(regres) # p-value is more than 0.05 -> homocedasticity not violated
+library(pander)
 homoc.test <- data.frame(Coefficients = c("ChiSquare", "df","p-value"),
                        Value = c(2.162, 1, 0.1412))
-kable(homoc.test, caption = "Homocedasticity Test")
+pander(homoc.test, caption = "Homocedasticity Test")
 ```
+
+Thus, this assumption is satisfied for the model.
 
 __Autocorrelation of residuals__
 
 The residuals on the model are not autocorrelated, and the current value is not dependent on other variable, as graph 15 shows, so the assumption was not violated.
+
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 library(haven)
 lapop2010 <- read_stata("~/Downloads/Analise de dados/LAPOP_2010")
@@ -585,9 +574,11 @@ regres <- lm(d6 ~ l1 + q5a, data = lapop) # regression formula
 acf(regres$residuals, main="Graph 15 - No autocorrelation")
 ```
 
+
 __Correlation between the independent variables__
 
-The independent variables must not be autocorrelated. Test indicates that p-value is higher that 0.05, so null hypothesis cannot be rejected, which means the assumption is true for the model (table 6).
+The independent variables must not be autocorrelated. Test indicates that p-value is higher that 0.05, so null hypothesis cannot be rejected, which means the assumption is true for the model (table 7).
+
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 library(haven)
 library(pander)
@@ -600,9 +591,11 @@ regres <- lm(d6 ~ l1 + q5a, data = lapop) # regression formula
 pander(cor.test(l1, q5a, data = lapop2010))
 ```
 
+
 __Variability__
 
-If variability value on the independent variables need to be higher them 0. As shown below this test did not funtion correctly, and it might have happened because those variables are categorical. In sum, this assumption might have been violated (table 7).
+If variability value on the independent variables need to be higher them 0. As shown below this test did not funtion correctly, and it might have happened because those variables are categorical. In sum, this assumption might have been violated (table 8).
+
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 library(haven)
 library(pander)
@@ -612,16 +605,17 @@ lapop <- lapop2010 # to change the database name
 lapop$l1 <- factor(lapop$l1) # ideology
 lapop$q5a <- factor(lapop$q5a) # frequency of religious services
 regres <- lm(d6 ~ l1 + q5a, data = lapop) # regression formula
-library(knitr)
 variability.test <- data.frame(Variable = c("Ideology(l1)", "Religion Frequency"),
                        Value = c(NA, NA))
 
-kable(variability.test, caption = "Variability Test")
+pander(variability.test, caption = "Variability Test")
 ```
+
 
 __Multicollinearity__
 
-The value of the test must be low than 2, so, if it is true, the model does not present multicollinearity. As it can be seen, the assumption holds for true and there is no perfect multicollinearity (table 8).
+The value of the test must be low than 2, so, if it is true, the model does not present multicollinearity. As it can be seen, the assumption holds for true and there is no perfect multicollinearity (table 9).
+
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 library(haven)
 library(pander)
@@ -631,17 +625,18 @@ lapop <- lapop2010 # to change the database name
 lapop[["l1"]] <- factor(lapop[["l1"]]) # ideology
 lapop[["q5a"]] <- factor(lapop[["q5a"]]) # frequency of religious services
 regres <- lm(d6 ~ l1 + q5a, data = lapop) # regression formula
-vif(regres)
-library(knitr)
+multi_test <- vif(regres)
 multi <- data.frame(Coefficients = c("GVIF", "df", "GVIF^(1/(2*DF))"),
                     Ideology = c(1.02, 9, 1.001),
                     Religion_Frequency = c(1.02, 4, 1.002))
-kable(multi, caption = "Multicollinearity Test")
+pander(multi, caption = "Multicollinearity Test")
 ```
+
 
 __Normality__
 
 Normality test indicates that this assumption did not violate its principal, once all the points fall approximately, as seen below on graph 11.
+
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 library(haven)
 lapop2010 <- read_stata("~/Downloads/Analise de dados/LAPOP_2010")
@@ -657,7 +652,24 @@ qqnorm(regres$residuals, main = "Graph 16 - Normal Q-Q Plot")
 
 #### Model - Ideology, Religion and Approval of Gay Marriage
 
-Since the assumptions were checked, now I can discuss the results of the regression. As I said before, p-value was significant(lower than 0.05). However, the marginal effects (graph 12) show that _ideology (l1)_ does not seem to be linear correlated to response _same sex marriage_, but _frequency of religious services (q5a)_ seem to explain better the answer.
+Since the assumptions were checked, now I can discuss the results of the regression. As I said before, p-value was significant(lower than 0.05) and it can be seen on table 10 However, the marginal effects (graph 12) show that _ideology (l1)_ does not seem to be linear correlated to response _same sex marriage_, but _frequency of religious services (q5a)_ seem to explain better the answer.
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+library(haven)
+library(pander)
+lapop2010 <- read_stata("~/Downloads/Analise de dados/LAPOP_2010")
+# Transform independent variables(categorical variables) into factor 
+lapop <- lapop2010 # to change the database name
+lapop$l1 <- factor(lapop$l1) # ideology
+lapop$q5a <- factor(lapop$q5a) # frequency of religious services
+regres <- lm(d6 ~ l1 + q5a, data = lapop) # regression formula
+regress <- data.frame(Observations = c(1743),
+                      Residual_Std._Error = c(3.405),
+                      R2 = c(0.04232),
+                      Adjusted_R2 = c(0.03512),
+                      p_value = c("9.541e-11"))
+pander(regress, caption = "Regression Results")
+```
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 library(haven)
