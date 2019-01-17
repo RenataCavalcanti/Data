@@ -795,7 +795,7 @@ library(ggplot2)
 library(tidyverse)
 library(extrafont)
 # Second, load database
-den_year <- read_excel("~/Downloads/Analise de dados/denuncias_ano.xlsx")
+den_year <- read_excel("~/Downloads/Analise de dados/den_year.xlsx")
 # Third, set the faceting graph
 theme_set(theme_bw())
 den_year %>%
