@@ -3,6 +3,8 @@ title: "In the name of God"
 subtitle: "Shaping public opinion about homosexuals in Brazil"
 author: "Renata Cavalcanti"
 output: pdf_document
+date: "01/18/2019"
+fontsize: 12
 header-includes:
     - \usepackage{dcolumn}
 ---
@@ -10,6 +12,14 @@ header-includes:
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+
+__*Abstract*__
+
+Is brazilians' opinion about gay marriage conditioned to ideology and religion? Theory suggests politicians choose policies according to where they place themselves on a left-right scale, but is this true when it comes to public? My argument is, since people elect by representative democracy, they have the same opinion as deputies do; also, ideology and religion are very connected, as literature suggests, so, their opinion about same sex civil union must be connected with these two variables. The argument is tested by, first, analysing public and deputies opinion about the issue, and then, to understand if their opinion is shaped by ideology and religion, a regression test was used. In general terms, the hypotheses were confirmed, but only religion seems to be a determinant factor.
+
+__*KEYWORDS:*__ _LGBT, IDEOLOGY, RELIGION._
+
+
 ## Introduction
 
 Are voters opinion shaped by ideology and religion? Do they think the same as deputies? Representative democracy has its own problems, but _representation_ should not be one, unfortunately, it is. We elect people for the office thinking they will take our issues into consideration, but, sometimes, it does not happen. So, this article tries to investigate if this is true in Brazil about one specific topic: lesbians, gays, bisexuals and transsexuals (LGBTs) being under-represented (or not) in the country; also it tries to explain voters opinion about the issue. It is an important question about the quality of democracy.
@@ -86,11 +96,11 @@ To test hypotheses 3, a regression model is necessary, once I want to explain ho
 
 To summarize, my two objects of analysis are (1) deputy interviewed by PELA, and (2) person interviewed by LAPOP; the year is 2010 and the techniques are Correspondence Analysis and Regression. The dependent variable is _opinion about same-sex marriage_; the model has two independent variables: _ideology_ and _frequency of religious worship_.
 
-All the variables presented here are categorical and they are in total 12 variables, as tables 1 and 2 shows below:
+All the variables presented here are categorical and they are in total 12 variables, as tables 1 and 2 show below:
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
-library(knitr)
 library(kableExtra)
+library(pander)
 descriptive_lapop <- data.frame(Variable_code = c("q1", "d5", "d6", "l1", "q3c", "q5a", "q5b"),
                                 Meaning = c("Sex", "Do you approve or disapprove that homosexuals run for office?",
                                       "Do you approve or disapprove that homosexuals have the right to get married?",
@@ -103,13 +113,13 @@ descriptive_lapop <- data.frame(Variable_code = c("q1", "d5", "d6", "l1", "q3c",
                           12- Jehovah's Witness", "1- More than once a week, 2- Once a week, 3- Once or twice a month,
                           4- Once or twice a year, 5- Never or almost never", "1- Very important, 2- Something important,
                          3- Little important, 4- Not important"))
-kable(descriptive_lapop, caption = "LAPOP Database", "latex", booktabs = T) %>% kable_styling(full_width = T, latex_options = "striped") %>% column_spec(1, width = "5cm")
+pander(descriptive_lapop, caption = "LAPOP Database")
 
 ```
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
-library(knitr)
 library(kableExtra)
+library(pander)
 descriptive_lapop <- data.frame(Variable_code = c("SOCD4", "VAL1", "ID1", "RE1a", "RE1b"),
                                 Meaning = c("Sex", "Do you approve or disapprove that homosexuals have the right to get married?",
                                           "How do you place yourself on a left-right scale?", "What is your religion?",
@@ -118,12 +128,12 @@ descriptive_lapop <- data.frame(Variable_code = c("SOCD4", "VAL1", "ID1", "RE1a"
                               4- Evangelical Pentecostal, 
                               6- Traditional or Native Religions, 9- Others", "5- More than once a week, 4- Once a week, 3- Once a month,
                                2- Once or twice a year, 1- Never or almost never, 9- Others"))
-kable(descriptive_lapop, caption = "LAPOP Database", "latex", booktabs = T) %>% kable_styling(full_width = T, latex_options = "striped") %>% column_spec(1, width = "5cm")
+pander(descriptive_lapop, caption = "LAPOP Database")
 ```
 
+In sum, the object of analysis is the interviewed by _lapop_ and _pela_ in 2010; the database were taken from their own website. The techniques are both quantitative and, first, I chose to do a descriptive analysis, including an exploratory analysis, and then a linear regression, which are on the next section.
 
-
-## Findings/Results
+## Findings/Results^[The _script_ and database used in this section are available on GitHub <https://github.com/RenataCavalcanti/Data>, and on Dataverse <https://doi.org/10.7910/DVN/O6PQTW>]
 ### _LAPOP Data_
 #### LGBT
 An important question^[The survey of 2010 is available here: <http://datasets.americasbarometer.org/database/files/17600748482010_Brasil_Questionnaire_Portuguese.pdf>], first, is to know if Brazilians would agree that a homosexual run for office on elections and, fortunately, LAPOP (public opinion) has that on its survey: _do you approve or disapprove that homosexuals run for office?_^[Question code is _d5_.], it is a scale from 1 to 10, which the first means that they _strongly disapprove_, and the second that they _strongly approve_. The descriptive data on graph 1 does not show differences among men and women, both seem to have the same opinion. However, when this data is crossed in a chi square test, as shown on table 3, the p-value is significant (0.013) and 9 degrees of freedom. 
@@ -143,6 +153,7 @@ ggplot(LAPOP_2010, aes(d5)) + geom_bar(aes(fill=q1)) +
   theme(axis.text.x=element_text(angle = -45, hjust = 0)) +
   theme(axis.title.x = element_blank()) +
   ggtitle("Graph 1 - Should homosexuals run for office?") +
+  labs(caption = "Source: LAPOP") +
   theme(legend.position="none")
 ```
 
@@ -153,9 +164,10 @@ library(haven)
 lapop2010 <- read_stata("~/Downloads/Analise de dados/LAPOP_2010")
 chi <- chisq.test(lapop2010$d5, lapop2010$q1, correct = FALSE)
 library(knitr)
+library(pander)
 chiTable <- data.frame(Coefficients = c("X-Squared", "P-Value","df", "N"),
                  Value = c(20.863, 0.013, 9, 2482))
-kable(chiTable, caption = "Chi-Square")
+pander(chiTable, caption = "Chi-Square")
 ```
 
 Again, table 3 is a chi-square test whereupon I used the variables described on graph 1; this test was chosen due to its utility to compare different groups, which, in this model is between men and women. As seen above, p-value was significant with 9 degrees of freedom, which means the null hypothesis is rejected and there is a relationship between gender and agreement about homosexuals running for office.
@@ -176,6 +188,7 @@ ggplot(LAPOP_2010, aes(d6)) + geom_bar(aes(fill=q1)) +
   theme(axis.text.x=element_text(angle = -45, hjust = 0)) +
   theme(axis.title.x = element_blank()) +
   ggtitle("Graph 2 - Should homosexuals have the right to get married?") +
+    labs(caption = "Source: LAPOP") +
   theme(legend.position="none")
 ```
 
@@ -323,7 +336,7 @@ On the survey about the deputies in Brazil, there is only one question focused o
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 library(haven)
 library(ggplot2)
-pela2010 <- read_sav("~/Downloads/Analise de dados/CEL_UFMG_Banco_Elites_Nacionais_Deputados_Federais_2010/CEL_UFMG_Banco_Elites_Nacionais_Deputados_Federais_2010.sav")
+pela2010 <- read_sav("~/Downloads/Analise de dados/CEL_UFMG_Banco_Elites_Nacionais_Deputados_Federais_2010/pela2010.sav")
 attach(pela2010)
 pela2010 <- data.frame(SOCD4 = factor(SOCD4, labels = c("Men", "Women")), 
                          VAL1 = factor(VAL1, labels = c("Strongly disapprove", "2", "3", "4", "5", 
@@ -342,9 +355,10 @@ ggplot(pela2010, aes(VAL1)) + geom_bar(aes(fill=SOCD4)) +
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 chi <- chisq.test(pela2010$SOCD4, pela2010$VAL1, correct = FALSE)
 library(knitr)
+library(pander)
 chiTable <- data.frame(Coefficients = c("X-Squared", "P-Value","df", "N"),
                        Value = c(15.493, 0.078, 9, 129))
-kable(chiTable, caption = "Chi-Square")
+pander(chiTable, caption = "Chi-Square")
 ```
 
 Also, graph 9 shows that the majority of deputies seem to _strongly disapprove_ same sex marriage, as is goes on the right, the bar increases.
@@ -352,7 +366,7 @@ Also, graph 9 shows that the majority of deputies seem to _strongly disapprove_ 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 library(haven)
 library(ggplot2)
-pela2010 <- read_sav("~/Downloads/Analise de dados/CEL_UFMG_Banco_Elites_Nacionais_Deputados_Federais_2010/CEL_UFMG_Banco_Elites_Nacionais_Deputados_Federais_2010.sav")
+pela2010 <- read_sav("~/Downloads/Analise de dados/CEL_UFMG_Banco_Elites_Nacionais_Deputados_Federais_2010/pela2010.sav")
 attach(pela2010)
 pela <- data.frame(VAL1 = factor(VAL1, labels = c("Strongly disapprove", "2", "3", "4", "5", 
                                                "6", "7", "8", "9", "Strongly approve")), 
@@ -378,7 +392,7 @@ As expected, the data shows (graph 10) that Congress is filled more with catholi
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 library(haven)
 library(ggplot2)
-pela2010 <- read_sav("~/Downloads/Analise de dados/CEL_UFMG_Banco_Elites_Nacionais_Deputados_Federais_2010/CEL_UFMG_Banco_Elites_Nacionais_Deputados_Federais_2010.sav")
+pela2010 <- read_sav("~/Downloads/Analise de dados/CEL_UFMG_Banco_Elites_Nacionais_Deputados_Federais_2010/pela2010.sav")
 
 theme_set(theme_bw())
 attach(pela2010)
@@ -424,7 +438,7 @@ About same sex civil union, the majority of deputies seem to _strongly disapprov
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 library(haven)
 library(ggplot2)
-pela2010 <- read_sav("~/Downloads/Analise de dados/CEL_UFMG_Banco_Elites_Nacionais_Deputados_Federais_2010/CEL_UFMG_Banco_Elites_Nacionais_Deputados_Federais_2010.sav")
+pela2010 <- read_sav("~/Downloads/Analise de dados/CEL_UFMG_Banco_Elites_Nacionais_Deputados_Federais_2010/pela2010.sav")
 attach(pela2010)
 pela <- data.frame(RE1b = factor(RE1b, labels = c("More than once a week", "Once a week", "Once a month",
                                                   "Once or twice a year", "Never or almost never", "Others")), 
@@ -450,7 +464,7 @@ On the LAPOP survey, the respondent is asked to place themselves on the right or
 library(haven)
 library(ggplot2)
 lapop2010 <- read_stata("~/Downloads/Analise de dados/LAPOP_2010")
-pela2010 <- read_sav("~/Downloads/Analise de dados/CEL_UFMG_Banco_Elites_Nacionais_Deputados_Federais_2010/CEL_UFMG_Banco_Elites_Nacionais_Deputados_Federais_2010.sav")
+pela2010 <- read_sav("~/Downloads/Analise de dados/CEL_UFMG_Banco_Elites_Nacionais_Deputados_Federais_2010/pela2010.sav")
 attach(lapop2010)
 lapop2010_2 <- data.frame(l1 = factor(l1, labels = c("Left", "2", "3", "4", "5", 
                                                      "6", "7", "8", "9", "Right")))
@@ -474,7 +488,7 @@ Also, it is important to notice, as discussed above, that the majority of deputi
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 library(haven)
 library(ggplot2)
-pela2010 <- read_sav("~/Downloads/Analise de dados/CEL_UFMG_Banco_Elites_Nacionais_Deputados_Federais_2010/CEL_UFMG_Banco_Elites_Nacionais_Deputados_Federais_2010.sav")
+pela2010 <- read_sav("~/Downloads/Analise de dados/CEL_UFMG_Banco_Elites_Nacionais_Deputados_Federais_2010/pela2010.sav")
 data_pela20102 <- data.frame(SOCD4 = factor(SOCD4, labels = c("Men", "Women")), 
                              VAL1 = factor(VAL1, labels = c("Strongly disapprove", "2", "3", "4", "5", 
                                                             "6", "7", "8", "9", "Strongly approve")))
@@ -652,7 +666,7 @@ qqnorm(regres$residuals, main = "Graph 16 - Normal Q-Q Plot")
 
 #### Model - Ideology, Religion and Approval of Gay Marriage
 
-Since the assumptions were checked, now I can discuss the results of the regression. As I said before, p-value was significant(lower than 0.05) and it can be seen on table 10 However, the marginal effects (graph 12) show that _ideology (l1)_ does not seem to be linear correlated to response _same sex marriage_, but _frequency of religious services (q5a)_ seem to explain better the answer.
+Since the assumptions were checked, now I can discuss the results of the regression. As I said before, p-value was significant(lower than 0.05) and it can be seen on table 10 However, the marginal effects (graph 18) show that _ideology (l1)_ (the second plot) does not seem to be linear correlated to response _same sex marriage_, but _frequency of religious services (q5a)_ (the first plot) seem to explain better the answer.
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 library(haven)
@@ -688,10 +702,11 @@ plot_model(regres,title = "Regression", type = "slope") +
   labs(y="Same sex marriage approval", title = "Graph 17 - Marginal effects")
 ```
 
-Again, to be sure, graph 13 shows the coefficients of the model. The  first line is religion variable (q5a) and the second is ideology (l1), and it shows, in sum, that ideology is not significant, but frequency of religious services is, once thes lines do not touch the _zero_ point.
+Again, to be sure, graph 18 shows the coefficients of the model. The  first plot is the religion variable (q5a) and the second is ideology (l1), and it shows, in sum, that ideology is not significant, but frequency of religious services is, once thes lines do not touch the _zero_ point.
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 library(haven)
+library(coefplot)
 lapop2010 <- read_stata("~/Downloads/Analise de dados/LAPOP_2010")
 # Transform independent variables(categorical variables) into factor 
 lapop <- lapop2010 # to change the database name
@@ -699,114 +714,47 @@ lapop$l1 <- factor(lapop$l1) # ideology
 lapop$q5a <- factor(lapop$q5a) # frequency of religious services
 lapop <- lapop2010 # to change the database name
 regres <- lm(d6 ~ l1 + q5a, data = lapop) # regression formula
-coefplot::coefplot(regres, parm = -1, 
+coefplot(regres, parm = -1, 
                    title = "Graph 18 - Coefficient Regression Plot") # plot coefficients
 ```
 
-IN SUM RESUMIR AQUI
+In sum, the model is significant, but only _frequency of religious services_ explains in part the disapproval/approval of gay marriage.
 
+To end this section, I would also like to see which one of the religions presented on the survey disapproves the most the right of same sex marriage. Graph 19 shows the distribution of the answer for gay marriage question according to the religion of the respondent. On the graph we see that the answer of Jeovah's Witness, Mormons and Protestants are more concentrated on _strongly disapprove_ than the others, so it seems that these groups resist more to the idea of two people from the same sex getting married. However, it is important to remember catholics are more numerous(they are on the middle), followed by protestants and pentecostals, and there were few atheists and Jeovah's Witnesses people who answered the survey; the other answers have been more evenly distributed, but always tending to _strongly_ rejection. Traditional/Native religions are the ones who _strongly approve_ the most, followed by Kardecist Spiritist and not Christians.
 
-
-
-
-
-
-###### ACABA AQUUIII
-
-
-
-
-
-
-
-These results might have been an indicative for what the regression reported on table 4: the model is  not statistically significant, since p-value was 0.709 and adjusted r-squared was -0.000. In other words, the answer of the public about gay marriage does not have a relationship with ideology; in fact, descriptive data has shown people disapprove same sex civil union, but they tend to place themselves into the center on the ideological scale. So, it all means that ideology (_perception_, at least) does not matter and the majority of people tend to disapprove gay marriage. Graph 9 below details better, and as we can see, even the majority of people on the _extreme_ left strongly disapprove. Thus, this does not corroborate to the hypothesis 3, that is, ideology does not explain policy positions about LGBTs. These results can be better seen on graph 11.
-
-``````{r, message=FALSE, warning=FALSE}
-library(haven)
-library(pander)
-lapop2010 <- read_stata("~/Downloads/Analise de dados/LAPOP_2010")
-reg_lapop <- lm(d6 ~ l1, data = lapop2010)
-pander(summary(reg_lapop), caption = "Model 1 - Regression Results")
-```
-
-
-
-ESSA SECAO NAO SER?? COLOCADA
-
-
-#### Model 2 - Religion as a determinant factor
-
-Until now, only one of the hypotheses tested here were confirmed: people and Congress disapprove gay marriage. Nevertheless, I can not determinate if Brazil is a homophobic country, due to the fact that on one hand, for public opinion it is okay that a homosexual run for office, but this same person should not have the right to get married on legal terms. The answer for why it happens might be presented on the fact Christianity rejects that, and the majority of people in Brazil is Christian, as seen above.
-
-Therefore, the model concentrates as follow: the dependent variable is disapprove/approve of same sex marriage, the independent variables are ideology (again, because it is an interactive model) and frequency to religious services, such as cults and masses.
-
-Again, since p-value was 1.331, the result can be seen on table 6 and it was not significant; the adjusted R-squared increased to 0.027, which means the model explains only 2% of public decision to disapprove same sex marriage. In fact, it does not matter the frequency they go to Church, as we can see below (graph 12), in general, they all tend to disapprove civil union of gays.
-
-```{r, message=FALSE, warning=FALSE}
-library(haven)
-lapop2010 <- read_stata("~/Downloads/Analise de dados/LAPOP_2010")
-reg_lapop2 <- lm(d6 ~ l1 + q5a, data = lapop2010)
-pander(summary(reg_lapop), caption = "Model 2 - Regression Results")
-```
-```{r, message=FALSE, warning=FALSE}
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
 library(haven)
 library(ggplot2)
-lapop2010 <- read_stata("~/Downloads/Analise de dados/LAPOP_2010")
-attach(lapop2010)
-lapop2 <- data.frame(d6 = factor(d6, labels = c("Strongly disapprove", "2", "3", "4", "5", 
-                                                "6", "7", "8", "9", "Strongly approve")),
-                     q5a = factor(q5a, labels = c("More than once a week", "Once a week", 
-                                                  "Once or twice a month",
-                                                  "Once or twice a year", "Never or almost never")))
+LAPOP_2010 <- read_stata("~/Downloads/Analise de dados/LAPOP_2010")
+
+agg <- aggregate(d6 ~ q3c, data = LAPOP_2010, FUN = mean)
+attach(agg)
+
+lapop_agg <- data.frame(q3c = factor(q3c, labels = c("Catholic", "Protestant", "Not Christian", "None", 
+                                                     "Evangelical Pentecostal", "Mormon", 
+                                                     "Traditional or Native Religions", 
+                                                     "Kardecist Spiritist", "Jewish", "Atheist",
+                                                     "Jehovah's Witness")),
+                        d6 = factor(d6, labels = c("Strongly disapprove", "2", "3", "4", "5", 
+                                                   "6", "7", "8", "9", "10", "Strongly approve")))
 theme_set(theme_bw())
-ggplot() +
-  geom_bar(data=lapop2, aes(x=d6, fill = q5a), alpha = 1) +
-  facet_wrap(~q5a, ncol = 2) +
-  theme(axis.text.x=element_text(angle = -45, hjust = 0)) +
-  labs(title="Graph 12 - Frequency of Religious cults vs. Public opinion about same sex marriage", 
-       x="", y="",
-       fill = "",
-       caption = "Source: LAPOP") +
-  theme(legend.position="none")
-```
-
-To end this section, I would also like to see which one of the religions presented on the survey disapproves the most the right of same sex marriage. Graph 13 shows the distribution of the answer for gay marriage question according to the religion of the respondent. On the graph we see that the answer of Jeovah's Witness and atheists are more concentrated on _strongly disapprove_ than the others, so it might seem that these groups resist more to the idea of two people from the same sex getting married. However, it is important to remember catholics are more numerous, followed by protestants and pentecostals, and there were few atheists and Jeovah's Witnesses people who answered the survey; the other answers have been more evenly distributed, but always tending to _strongly_ rejection, as graph 5 showed.
-
-```{r, message=FALSE, warning=FALSE}
-library(haven)
-library(ggplot2)
-library(ggridges)
-lapop2010 <- read_stata("~/Downloads/Analise de dados/LAPOP_2010")
-
-attach(lapop2010)
-lapop <- data.frame(d6 = factor(d6, labels = c("Strongly disapprove", "2", "3", "4", "5", 
-                                               "6", "7", "8", "9", "Strongly approve")),
-                    q3c = factor(q3c, labels = c("Catholic", "Protestant", "Not Christian", "None", 
-                                                 "Evangelical Pentecostal", "Mormon", 
-                                                 "Traditional or Native Religions", 
-                                                 "Kardecist Spiritist", "Jewish", "Atheist",
-                                                 "Jehovah's Witness")))
-theme_set(theme_bw())
-ggplot(lapop, aes(x = d6, y = q3c, fill = q3c)) +
-  geom_density_ridges(alpha=0.3, bandwidth=2) +
+ggplot(lapop_agg, aes(x = q3c, y = d6, color = d6)) +
+  geom_point(bandwidth=2, size = 3) +
   theme_light() +
-  theme(axis.text.x=element_text(angle = -45, hjust = 0)) +
+  theme(axis.text.x=element_text(angle = 90, hjust = 0)) +
   theme(legend.position = "none") +
-  labs(title="Graph 13 - Religion rejection vs. Public opinion 
+  labs(title="Graph 19 - Religion rejection vs. Public opinion 
        about same sex marriage", 
-       x="", y="",
+       x="", y="Mean",
        fill = "",
        caption = "Source: LAPOP")
-
 ```
 
 ## Implications and Conclusions
 
-This work tried to explain how the opinions about LGBTs on Brazil are shaped; I had four hypotheses to be tested by two different ways. First I chose to look at the representation concept and investigate if people and Congress think the same about the homosexual issue of having the right of civil union. The data used here confirmed previous hypothesis: in fact, deputies and public think the same and they do not approve that homosexuals have the right of getting married. About the second hypothesis, that Brazil is a homophobic country, I could not confirm until see the rest of the analysis, due to the fact that Brazilians think it is okay for a homosexual to run for office.
+This work tried to explain how the opinions about LGBTs on Brazil are shaped; I had three hypotheses to be tested by two different ways. First I chose to look at the representation concept and investigate if people and Congress think the same about the homosexual issue of having the right of civil union. The data used here confirmed previous hypothesis: in fact, deputies and public think the same and they do not approve that homosexuals have the right of getting married. About the second hypothesis, that Brazil is a homophobic country, I could not confirm until see the rest of the analysis, due to the fact that Brazilians think it is okay for a homosexual to run for office.
 
-Nevertheless, my other two hypotheses were not corroborated. As theory suggests, ideology is a determinant factor for choosing certain politics instead of others; also, since ideology is associated with religion, I thought religion could be a determinant factor for rejecting LGBTs rights. Well, it might be real in other countries. As seen above, people who placed themselves on the left scale disapprove the civil union of people from the same sex on the same intensity as people on the right; furthermore, religion was not a determinant factor: people who go often to cults and people who go few times (or never), in general terms, strongly disapprove gay marriage. I believe these results can confirm hypothesis 2 that Brazil is a homophobic country, but, of course, more studies are needed for that.
-
-Therefore, there is also the need to understand what shapes public opinion about LGBTs issue, and other factors have to be studied besides ideology and religion.
+The other hypothesis was also corroborated, but with reservations. As theory suggests, ideology is a determinant factor for choosing certain politics instead of others; also, since ideology is associated with religion, I thought religion could be a determinant factor for rejecting LGBTs rights. Well, it might be real in other countries. As seen above, people who placed themselves on the left scale disapprove the civil union of people from the same sex on the same intensity as people on the right; on the other hand, religion is a determinant factor: people who go often to cults tend to reject gay marriage more than people who go few times (or never). I believe these results can also confirm hypothesis 2 that Brazil is a homophobic country, since the majority of people in Brazil is religious, but, of course, more studies are needed for that.
 
 ## References
 Alexander, J. _Introduction to the Special Issue:_ Queer Webs: Representations of LGBT People and Communities on the World Wide Web. International Journal of Sexuality and Gender Studies, 2002. Available on <https://link.springer.com/article/10.1023%2FA%3A1015821431188>Accessed in 12/22/2018.
@@ -839,7 +787,7 @@ According to the _Ministerio de Direitos Humanos (MDH)_^[ More information avail
 
 Also, the data shows (graph A2) that men are more attacked than women, at least they denounce more than women. In gender identity terms, gays and transvestites have the highest numbers of complaints (graph A3), followed by transsexuals and lesbians.
 
-```{r, message=FALSE, warning=FALSE}
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
 # Graph 1
 # First, load packages
 library(readxl)
@@ -864,7 +812,7 @@ den_year %>%
   facet_wrap(~State)
 ```
 
-```{r, message=FALSE, warning=FALSE}
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
 library(ggplot2)
 # Graph 2
 # The database had to be built from the availiable in the website, because it was not good for visualization and to explore on R
