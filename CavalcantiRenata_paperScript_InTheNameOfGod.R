@@ -3,6 +3,19 @@
 # subtitle: "Shaping public opinion about homosexuals in Brazil"
 # author: "Renata Cavalcanti"
 
+# First, install packages:
+install.packages("DiagrammeR")
+install.packages("knitr")
+install.packages("kableExtra")
+install.packages("haven")
+install.packages("ggplot2")
+install.packages("pander")
+install.packages("car")
+install.packages("sjPloot")
+install.packages("jtools")
+install.packages("coefplot")
+install.packages("ggridges")
+
 # Section "Argument"
 # Figure 1- Theory (Diagram)
 # First require package
@@ -159,7 +172,7 @@ ggplot(lapop_graph4, aes(q3c, fill=q3c)) + geom_bar() +
 
 # Graph 5
 # Call database
-attach(LAPOP)
+attach(LAPOP_2010)
 # Set data frame
 lapop_graph5 <- data.frame(q5a = factor(q5a, labels = c("More than once a week", "Once a week", "Once or twice a month",
                                                      "Once or twice a year", "Never or almost never")), 
@@ -210,7 +223,7 @@ ggplot(lapop_graph6, aes(x=q5b, y=q3c)) +
 
 # Graph 7
 # Call database
-attach(lapop2010)
+attach(LAPOP_2010)
 # Set data frame
 lapop_graph7 <- data.frame(q5a = factor(q5a, labels = c("More than once a week", "Once a week", "Once or twice a month",
                                                  "Once or twice a year", "Never or almost never")), 
@@ -232,7 +245,7 @@ ggplot() +
 ### LGBT
 
 # Open database
-pela2010 <- read_sav("~/Downloads/Analise de dados/CEL_UFMG_Banco_Elites_Nacionais_Deputados_Federais_2010/CEL_UFMG_Banco_Elites_Nacionais_Deputados_Federais_2010.sav")
+pela2010 <- read_sav("~/Downloads/Analise de dados/CEL_UFMG_Banco_Elites_Nacionais_Deputados_Federais_2010/pela2010.sav")
 
 # Graph 8
 # Call database
@@ -334,7 +347,7 @@ ggplot(pela_graph11, aes(x=RE1b, y=RE1a)) +
 
 # Graph 13
 # Call LAPOP database
-attach(lapop2010)
+attach(LAPOP_2010)
 # Set LAPOP data frame
 lapop_graph13 <- data.frame(l1 = factor(l1, labels = c("Left", "2", "3", "4", "5", 
                                                      "6", "7", "8", "9", "Right")))
@@ -355,7 +368,7 @@ ggplot() +
 
 # Graph 14
 # Call LAPOP database
-attach(lapop2010)
+attach(LAPOP_2010)
 # Set LAPOP data frame
 lapop_graph14 <- data.frame(q1 = factor(q1, labels = c("Men", "Women")), 
                                d6 = factor(d6, labels = c("Strongly disapprove", "2", "3", "4", "5", 
@@ -522,32 +535,34 @@ plot_model(regres,title = "Regression", type = "slope") +
 # Graph 18
 # Call database
 attach(LAPOP_2010)
+# Load package
+library(coefplot)
 # Transform independent variables(categorical variables) into factor 
 lapop <- LAPOP_2010 # to change the database name
 lapop$l1 <- factor(lapop$l1) # ideology
 lapop$q5a <- factor(lapop$q5a) # frequency of religious services
 regres <- lm(d6 ~ l1 + q5a, data = lapop) # regression formula
 # plot coefficients
-coefplot::coefplot(regres, parm = -1, 
+coefplot(regres, parm = -1, 
                    title = "Graph 18 - Coefficient Regression Plot") 
-
 # Graph 19
-# Call database
-attach(LAPOP_2010)
-# Load packages
-library(ggridges)
+# Create a new table with the mean
+agg <- aggregate(d6 ~ q3c, data = LAPOP_2010, FUN = mean)
+
+# Call new table
+attach(agg)
 # Set data frame
-lapop_graph19 <- data.frame(d6 = factor(d6, labels = c("Strongly disapprove", "2", "3", "4", "5", 
-                                               "6", "7", "8", "9", "Strongly approve")),
-                    q3c = factor(q3c, labels = c("Catholic", "Protestant", "Not Christian", "None", 
-                                                 "Evangelical Pentecostal", "Mormon", 
-                                                 "Traditional or Native Religions", 
-                                                 "Kardecist Spiritist", "Jewish", "Atheist",
-                                                 "Jehovah's Witness")))
-theme_set(theme_bw()) # for white background
+lapop_agg <- data.frame(q3c = factor(q3c, labels = c("Catholic", "Protestant", "Not Christian", "None", 
+                                                     "Evangelical Pentecostal", "Mormon", 
+                                                     "Traditional or Native Religions", 
+                                                     "Kardecist Spiritist", "Jewish", "Atheist",
+                                                     "Jehovah's Witness")),
+                        d6 = factor(d6, labels = c("Strongly disapprove", "2", "3", "4", "5", 
+                                                   "6", "7", "8", "9", "10", "Strongly approve")))
 # Build graph
-ggplot(lapop_graph19, aes(x = d6, y = q3c, fill = q3c)) +
-  geom_density_ridges(alpha=0.3, bandwidth=2) +
+theme_set(theme_bw()) # for white background
+ggplot(lapop_agg, aes(x = q3c, y = d6, color = d6)) +
+  geom_point(bandwidth=2, size = 3) +
   theme_light() +
   theme(axis.text.x=element_text(angle = -45, hjust = 0)) +
   theme(legend.position = "none") +
@@ -556,5 +571,57 @@ ggplot(lapop_graph19, aes(x = d6, y = q3c, fill = q3c)) +
        x="", y="",
        fill = "",
        caption = "Source: LAPOP")
+
+
+### APPENDIX ###
+
+# Graph A1
+# First, load packages
+library(readxl)
+library(ggplot2)
+library(tidyverse)
+library(extrafont)
+# Second, load database
+den_year <- read_excel("~/Downloads/Analise de dados/denuncias_ano.xlsx")
+# Third, set the faceting graph
+theme_set(theme_bw())
+den_year %>%
+  ggplot( aes(x=Year, y=Number_of_Denouncement, group=State, fill=State)) +
+  geom_area() +
+  theme(legend.position="none") +
+  ggtitle("Graph A1 - LGBT denouncement by year") +
+  theme(
+    legend.position="none",
+    panel.spacing = unit(0.1, "lines"),
+    strip.text.x = element_text(size = 8),
+    plot.title = element_text(size=14)
+  ) +
+  facet_wrap(~State)
+
+
+# Graph A2
+# The database had to be built from the availiable in the website, because it was not good for visualization and to explore on R
+# So, first it is necessary to set the data
+data=data.frame(name=c("Female","Male","Uninformed") , value=c(457, 852, 168))
+colours <- c("deepskyblue2", "chartreuse3", "brown2")
+# data available here: <http://www.mdh.gov.br/informacao-ao-cidadao/ouvidoria/dados-disque-100/balanco-geral-2011-a-2017-lgbt.xls/view>
+# Create barplot
+ggplot(data, aes(x=name, y=value)) + geom_bar(stat = "identity", fill = colours, width = 0.3) +
+  theme_bw()+
+  xlab("") +
+  ylab("N") +
+  labs(title = "Graph A2 - LGBT victim's profile (2017)")
+# Graph A3
+# The database had to be built from the availiable in the website, because it was not good for visualization and to explore on R
+# So, first it is necessary to set the data
+data2=data.frame(name=c("Bisexual", "Gay", "Heterosexual", "Lesbian", "Uninformed", "Transsexual",
+                        "Transvestite"), value=c(51, 470, 32, 165, 301, 221, 237))
+colours2 <- c("deepskyblue2", "chartreuse3", "brown2", "blueviolet", "darkcyan", "darkblue", "chocolate3")
+# Create barplot
+ggplot(data2, aes(x=name, y=value)) + geom_bar(stat = "identity", fill = colours2, width = 0.3) +
+  theme_bw()+
+  xlab("") +
+  ylab("N") +
+  labs(title = "Graph A3 - LGBT victim's profile by gender identity (2017)")
 
 #### END #### 
