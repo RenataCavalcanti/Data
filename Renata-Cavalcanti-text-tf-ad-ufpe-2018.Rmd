@@ -13,6 +13,33 @@ header-includes:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+```{r include=FALSE}
+# Load packages
+library(DiagrammeR)
+library(knitr)
+library(kableExtra)
+library(haven)
+library(ggplot2)
+library(pander)
+library(car)
+library(sjPlot)
+library(jtools)
+library(coefplot)
+library(ggridges)
+library(readxl)
+
+# Open database
+Renata_Cavalcanti_bd_tf_ad_ufpe_2018 <- read_stata("~/Downloads/Analise de dados/Renata-Cavalcanti-bd-tf-ad-ufpe-2018")
+LAPOP_2010 <- Renata_Cavalcanti_bd_tf_ad_ufpe_2018 # rename
+
+Renata_Cavalcanti_bd2_tf_ad_ufpe_2018 <- read_sav("~/Downloads/Analise de dados/CEL_UFMG_Banco_Elites_Nacionais_Deputados_Federais_2010/Renata-Cavalcanti-bd2-tf-ad-ufpe-2018")
+pela2010 <- Renata_Cavalcanti_bd2_tf_ad_ufpe_2018 # rename
+
+Renata_Cavalcanti_bd3_tf_ad_ufpe_2018 <- read_excel("~/Downloads/Analise de dados/Renata-Cavalcanti-bd3-tf-ad-ufpe-2018.xlsx")
+den_year <- Renata_Cavalcanti_bd3_tf_ad_ufpe_2018 # rename
+```
+
+
 __*Abstract*__
 
 Is brazilians' opinion about gay marriage conditioned to ideology and religion? Theory suggests politicians choose policies according to where they place themselves on a left-right scale, but is this true when it comes to public? My argument is, since people elect by representative democracy, they have the same opinion as deputies do; also, ideology and religion are very connected, as literature suggests, so, their opinion about same sex civil union must be connected with these two variables. The argument is tested by, first, analysing public and deputies opinion about the issue, and then, to understand if their opinion is shaped by ideology and religion, a regression test was used. In general terms, the hypotheses were confirmed, but only religion seems to be a determinant factor.
@@ -139,9 +166,6 @@ In sum, the object of analysis is the interviewed by _lapop_ and _pela_ in 2010;
 An important question^[The survey of 2010 is available here: <http://datasets.americasbarometer.org/database/files/17600748482010_Brasil_Questionnaire_Portuguese.pdf>], first, is to know if Brazilians would agree that a homosexual run for office on elections and, fortunately, LAPOP (public opinion) has that on its survey: _do you approve or disapprove that homosexuals run for office?_^[Question code is _d5_.], it is a scale from 1 to 10, which the first means that they _strongly disapprove_, and the second that they _strongly approve_. The descriptive data on graph 1 does not show differences among men and women, both seem to have the same opinion. However, when this data is crossed in a chi square test, as shown on table 3, the p-value is significant (0.013) and 9 degrees of freedom. 
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
-library(ggplot2)
-library(haven)
-LAPOP_2010 <- read_stata("~/Downloads/Analise de dados/LAPOP_2010")
 attach(LAPOP_2010)
 LAPOP_2010 <- data.frame(q1 = factor(q1, labels = c("Men", "Women")), 
                          d5 = factor(d5, labels = c("Strongly disapprove", "2", "3", "4", "5", 
@@ -160,9 +184,7 @@ ggplot(LAPOP_2010, aes(d5)) + geom_bar(aes(fill=q1)) +
 Graph 1 is divided by sex and it is noticeable that, first, the majority of men and women do not have a problem about homosexuals running for office, but the data is extensive splitted by 10 groups, which could be an indicative of matter. Comparing the first and the last clusters, in total, 499 people strongly disapprove, while 1155 strongly approve that homosexuals run for office.
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
-library(haven)
-lapop2010 <- read_stata("~/Downloads/Analise de dados/LAPOP_2010")
-chi <- chisq.test(lapop2010$d5, lapop2010$q1, correct = FALSE)
+chi <- chisq.test(LAPOP_2010$d5, LAPOP_2010$q1, correct = FALSE)
 library(knitr)
 library(pander)
 chiTable <- data.frame(Coefficients = c("X-Squared", "P-Value","df", "N"),
@@ -176,8 +198,6 @@ Despite that, Brazilians seem to have something against the civil union of peopl
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 library(ggplot2)
-library(haven)
-LAPOP_2010 <- read_stata("~/Downloads/Analise de dados/LAPOP_2010")
 attach(LAPOP_2010)
 LAPOP_2010 <- data.frame(q1 = factor(q1, labels = c("Men", "Women")), 
                          d6 = factor(d6, labels = c("Strongly disapprove", "2", "3", "4", "5", 
@@ -195,10 +215,8 @@ ggplot(LAPOP_2010, aes(d6)) + geom_bar(aes(fill=q1)) +
 Comparing the public opinion with ideology and opinion about same sex civil union, we can see that even the majority of people on the extreme left strongly disapprove. These results can be better seen on graph 3.
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
-library(haven)
 library(ggplot2)
-lapop2010 <- read_stata("~/Downloads/Analise de dados/LAPOP_2010")
-attach(lapop2010)
+attach(LAPOP_2010)
 lapop <- data.frame(d6 = factor(d6, labels = c("Strongly disapprove", "2", "3", "4", "5", 
                                                 "6", "7", "8", "9", "Strongly approve")), 
                                 l1 = factor(l1, labels = c("Left", "2", "3", "4", "5", 
@@ -223,12 +241,9 @@ As the data shows, there are more catholics in Brazil, followed by evangelical p
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 # Graph 4
 # Load packages
-library(haven)
 library(ggplot2)
-# Open data
-lapop2010 <- read_stata("~/Downloads/Analise de dados/LAPOP_2010")
 theme_set(theme_bw())
-attach(lapop2010)
+attach(LAPOP_2010)
 # Set the data to a frame
 lapop2010 <- data.frame(q1 = factor(q1, labels = c("Men", "Women")), 
                         q3c = factor(q3c, labels = c("Catholic", "Protestant", "Not Christian", "None", 
@@ -249,10 +264,9 @@ ggplot(lapop2010, aes(q3c, fill=q3c)) + geom_bar() +
 
 # Graph 5
 # Load package
-library(haven)
 library(ggplot2)
 # Open data
-lapop2010 <- read_stata("~/Downloads/Analise de dados/LAPOP_2010")
+attach(LAPOP_2010)
 # Set the data to a frame
 lapop2010 <- data.frame(q5a = factor(q5a, labels = c("More than once a week", "Once a week", "Once or twice a month",
                                                      "Once or twice a year", "Never or almost never")), 
@@ -277,13 +291,12 @@ ggplot(lapop2010, aes(x=q5a, y=q3c)) +
 
 # Graph 6
 # Load packages
-library(haven)
 library(ggplot2)
 # Open data
-lapop2010 <- read_stata("~/Downloads/Analise de dados/LAPOP_2010")
+attach(LAPOP_2010)
 theme_set(theme_bw()) # For the white background of the graph
 # Set the data to a frame
-attach(lapop2010)
+attach(LAPOP_2010)
 lapop2010 <- data.frame(q3c = factor(q3c, labels = c("Catholic", "Protestant", "Not Christian", "None", 
                                                      "Evangelical Pentecostal", "Mormon", 
                                                      "Traditional or Native Religions", 
@@ -308,10 +321,8 @@ ggplot(lapop2010, aes(x=q5b, y=q3c)) +
 Also, it seems that those who have more frequency on religious cults tend to reject more the same sex civil union (graph 7)
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
-library(haven)
 library(ggplot2)
-lapop2010 <- read_stata("~/Downloads/Analise de dados/LAPOP_2010")
-attach(lapop2010)
+attach(LAPOP_2010)
 lapop <- data.frame(q5a = factor(q5a, labels = c("More than once a week", "Once a week", "Once or twice a month",
                                                  "Once or twice a year", "Never or almost never")), 
                     d6 = factor(d6, labels = c("Strongly disapprove", "2", "3", "4", "5", 
@@ -334,9 +345,7 @@ ggplot() +
 On the survey about the deputies in Brazil, there is only one question focused on LGBTs in Brazil: if they disapprove or approve homosexuals the right to get married. Although the number of female deputies is way too low, they approve more with same sex marriage than man; male deputies, however, _strongly disapprove_ that homosexuals have this right. Graph 8 details those numbers better. Statistically, the chi-square test, on table 4, indicates that there are no differences among female and male deputies, since p-value is 0.078, with 9 degrees of freedom, so the null hypothesis can not be rejected, which means these variables are not associated.
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
-library(haven)
 library(ggplot2)
-pela2010 <- read_sav("~/Downloads/Analise de dados/CEL_UFMG_Banco_Elites_Nacionais_Deputados_Federais_2010/pela2010.sav")
 attach(pela2010)
 pela2010 <- data.frame(SOCD4 = factor(SOCD4, labels = c("Men", "Women")), 
                          VAL1 = factor(VAL1, labels = c("Strongly disapprove", "2", "3", "4", "5", 
@@ -364,9 +373,7 @@ pander(chiTable, caption = "Chi-Square")
 Also, graph 9 shows that the majority of deputies seem to _strongly disapprove_ same sex marriage, as is goes on the right, the bar increases.
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
-library(haven)
 library(ggplot2)
-pela2010 <- read_sav("~/Downloads/Analise de dados/CEL_UFMG_Banco_Elites_Nacionais_Deputados_Federais_2010/pela2010.sav")
 attach(pela2010)
 pela <- data.frame(VAL1 = factor(VAL1, labels = c("Strongly disapprove", "2", "3", "4", "5", 
                                                "6", "7", "8", "9", "Strongly approve")), 
@@ -390,10 +397,7 @@ ggplot() +
 As expected, the data shows (graph 10) that Congress is filled more with catholics, followed by pentecostals and protestants; again, it is important to notice that the number of women is very low. About their frequency, catholic deputies are often attending to religious services (graph 11), while the majority of religious people does not go very often.
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
-library(haven)
 library(ggplot2)
-pela2010 <- read_sav("~/Downloads/Analise de dados/CEL_UFMG_Banco_Elites_Nacionais_Deputados_Federais_2010/pela2010.sav")
-
 theme_set(theme_bw())
 attach(pela2010)
 # Set the data to a frame
@@ -436,9 +440,7 @@ ggplot(data2_pela2010, aes(x=RE1b, y=RE1a)) +
 About same sex civil union, the majority of deputies seem to _strongly disapprove_, no matter the frequency on cults (graph 12).
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
-library(haven)
 library(ggplot2)
-pela2010 <- read_sav("~/Downloads/Analise de dados/CEL_UFMG_Banco_Elites_Nacionais_Deputados_Federais_2010/pela2010.sav")
 attach(pela2010)
 pela <- data.frame(RE1b = factor(RE1b, labels = c("More than once a week", "Once a week", "Once a month",
                                                   "Once or twice a year", "Never or almost never", "Others")), 
@@ -461,11 +463,7 @@ ggplot() +
 On the LAPOP survey, the respondent is asked to place themselves on the right or on the left in the scale ^[Question code is: _L1_], same question for PELA ^[Question code is: _ID1_]. As we can see on graph 13, in 2010 the majority of public placed themselves on the center, but comparing the left with the right, we see that the right is more numerous, while for deputies, the majority who answered the survey stood on the left.
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
-library(haven)
-library(ggplot2)
-lapop2010 <- read_stata("~/Downloads/Analise de dados/LAPOP_2010")
-pela2010 <- read_sav("~/Downloads/Analise de dados/CEL_UFMG_Banco_Elites_Nacionais_Deputados_Federais_2010/pela2010.sav")
-attach(lapop2010)
+attach(LAPOP_2010)
 lapop2010_2 <- data.frame(l1 = factor(l1, labels = c("Left", "2", "3", "4", "5", 
                                                      "6", "7", "8", "9", "Right")))
 attach(pela2010)
@@ -486,14 +484,13 @@ In short, we have that, in total, deputies and public have the same opinion abou
 Also, it is important to notice, as discussed above, that the majority of deputies and voters are catholics and they are followed by protestants and pentecostals.
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
-library(haven)
 library(ggplot2)
-pela2010 <- read_sav("~/Downloads/Analise de dados/CEL_UFMG_Banco_Elites_Nacionais_Deputados_Federais_2010/pela2010.sav")
+attach(pela2010)
 data_pela20102 <- data.frame(SOCD4 = factor(SOCD4, labels = c("Men", "Women")), 
                              VAL1 = factor(VAL1, labels = c("Strongly disapprove", "2", "3", "4", "5", 
                                                             "6", "7", "8", "9", "Strongly approve")))
 
-LAPOP_2010 <- read_stata("~/Downloads/Analise de dados/LAPOP_2010")
+attach(LAPOP_2010)
 data_LAPOP_20102 <- data.frame(q1 = factor(q1, labels = c("Men", "Women")), 
                                d6 = factor(d6, labels = c("Strongly disapprove", "2", "3", "4", "5", 
                                                           "6", "7", "8", "9", "Strongly approve")))
@@ -534,16 +531,15 @@ __Residuals__
 This assumption indicates that the mean of residuals must be zero (or very close). The test below shows that this assumption is true for the model, since the mean is close to zero (table 5). It means that the model does not violate this assumption.
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
-library(haven)
-library(pander)
-lapop2010 <- read_stata("~/Downloads/Analise de dados/LAPOP_2010")
+Renata_Cavalcanti_bd_tf_ad_ufpe_2018 <- read_stata("~/Downloads/Analise de dados/Renata-Cavalcanti-bd-tf-ad-ufpe-2018")
+LAPOP_2010 <- Renata_Cavalcanti_bd_tf_ad_ufpe_2018 # renamelibrary(pander)
+attach(LAPOP_2010)
 # Transform independent variables(categorical variables) into factor 
-lapop <- lapop2010 # to change the database name
-lapop$l1 <- factor(lapop$l1) # ideology
-lapop$q5a <- factor(lapop$q5a) # frequency of religious services
+lapop <- LAPOP_2010 # to change the database name
+lapop$l1 <- factor(LAPOP_2010$l1) # ideology
+lapop$q5a <- factor(LAPOP_2010$q5a) # frequency of religious services
 regres <- lm(d6 ~ l1 + q5a, data = lapop) # regression formula
 # The mean of residuals is (close to) zero
-library(pander)
 resi_mean <- data.frame(Residual_mean = c("8.354e-16"))
 pander(resi_mean, caption = "Residual Mean")
 ```
@@ -554,13 +550,11 @@ __Homoscedasticity__
 The model does not violate homoscedasticity assumption, as table 6 shows; p=value is higher than 0.05, which means I cannot reject the null hypothesis and infer that heteroscedasticity is not indeed present.
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
-library(haven)
-library(car)
-lapop2010 <- read_stata("~/Downloads/Analise de dados/LAPOP_2010")
 # Transform independent variables(categorical variables) into factor 
-lapop <- lapop2010 # to change the database name
-lapop$l1 <- factor(lapop$l1) # ideology
-lapop$q5a <- factor(lapop$q5a) # frequency of religious services
+attach(LAPOP_2010)
+ lapop <- LAPOP_2010 # to change the database name
+lapop$l1 <- factor(LAPOP_2010$l1) # ideology
+lapop$q5a <- factor(LAPOP_2010$q5a) # frequency of religious services
 regres <- lm(d6 ~ l1 + q5a, data = lapop) # regression formula
 # Evaluate homoscedasticity
 homo.test <- ncvTest(regres) # p-value is more than 0.05 -> homocedasticity not violated
@@ -577,10 +571,9 @@ __Autocorrelation of residuals__
 The residuals on the model are not autocorrelated, and the current value is not dependent on other variable, as graph 15 shows, so the assumption was not violated.
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
-library(haven)
-lapop2010 <- read_stata("~/Downloads/Analise de dados/LAPOP_2010")
+attach(LAPOP_2010)
 # Transform independent variables(categorical variables) into factor 
-lapop <- lapop2010 # to change the database name
+lapop <- LAPOP_2010 # to change the database name
 lapop$l1 <- factor(lapop$l1) # ideology
 lapop$q5a <- factor(lapop$q5a) # frequency of religious services
 regres <- lm(d6 ~ l1 + q5a, data = lapop) # regression formula
@@ -594,11 +587,9 @@ __Correlation between the independent variables__
 The independent variables must not be autocorrelated. Test indicates that p-value is higher that 0.05, so null hypothesis cannot be rejected, which means the assumption is true for the model (table 7).
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
-library(haven)
-library(pander)
-lapop2010 <- read_stata("~/Downloads/Analise de dados/LAPOP_2010")
+attach(LAPOP_2010)
 # Transform independent variables(categorical variables) into factor 
-lapop <- lapop2010 # to change the database name
+lapop <- LAPOP_2010 # to change the database name
 lapop$l1 <- factor(lapop$l1) # ideology
 lapop$q5a <- factor(lapop$q5a) # frequency of religious services
 regres <- lm(d6 ~ l1 + q5a, data = lapop) # regression formula
@@ -611,11 +602,9 @@ __Variability__
 If variability value on the independent variables need to be higher them 0. As shown below this test did not funtion correctly, and it might have happened because those variables are categorical. In sum, this assumption might have been violated (table 8).
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
-library(haven)
-library(pander)
-lapop2010 <- read_stata("~/Downloads/Analise de dados/LAPOP_2010")
+attach(LAPOP_2010)
 # Transform independent variables(categorical variables) into factor 
-lapop <- lapop2010 # to change the database name
+lapop <- LAPOP_2010 # to change the database name
 lapop$l1 <- factor(lapop$l1) # ideology
 lapop$q5a <- factor(lapop$q5a) # frequency of religious services
 regres <- lm(d6 ~ l1 + q5a, data = lapop) # regression formula
@@ -631,11 +620,9 @@ __Multicollinearity__
 The value of the test must be low than 2, so, if it is true, the model does not present multicollinearity. As it can be seen, the assumption holds for true and there is no perfect multicollinearity (table 9).
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
-library(haven)
-library(pander)
-lapop2010 <- read_stata("~/Downloads/Analise de dados/LAPOP_2010")
+attach(LAPOP_2010)
 # Transform independent variables(categorical variables) into factor 
-lapop <- lapop2010 # to change the database name
+lapop <- LAPOP_2010 # to change the database name
 lapop[["l1"]] <- factor(lapop[["l1"]]) # ideology
 lapop[["q5a"]] <- factor(lapop[["q5a"]]) # frequency of religious services
 regres <- lm(d6 ~ l1 + q5a, data = lapop) # regression formula
@@ -652,13 +639,11 @@ __Normality__
 Normality test indicates that this assumption did not violate its principal, once all the points fall approximately, as seen below on graph 11.
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
-library(haven)
-lapop2010 <- read_stata("~/Downloads/Analise de dados/LAPOP_2010")
+attach(LAPOP_2010)
 # Transform independent variables(categorical variables) into factor 
-lapop <- lapop2010 # to change the database name
+lapop <- LAPOP_2010 # to change the database name
 lapop$l1 <- factor(lapop$l1) # ideology
 lapop$q5a <- factor(lapop$q5a) # frequency of religious services
-lapop <- lapop2010 # to change the database name
 regres <- lm(d6 ~ l1 + q5a, data = lapop) # regression formula
 qqnorm(regres$residuals, main = "Graph 16 - Normal Q-Q Plot")
 ```
@@ -669,11 +654,9 @@ qqnorm(regres$residuals, main = "Graph 16 - Normal Q-Q Plot")
 Since the assumptions were checked, now I can discuss the results of the regression. As I said before, p-value was significant(lower than 0.05) and it can be seen on table 10 However, the marginal effects (graph 18) show that _ideology (l1)_ (the second plot) does not seem to be linear correlated to response _same sex marriage_, but _frequency of religious services (q5a)_ (the first plot) seem to explain better the answer.
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
-library(haven)
-library(pander)
-lapop2010 <- read_stata("~/Downloads/Analise de dados/LAPOP_2010")
+attach(LAPOP_2010)
 # Transform independent variables(categorical variables) into factor 
-lapop <- lapop2010 # to change the database name
+lapop <- LAPOP_2010 # to change the database name
 lapop$l1 <- factor(lapop$l1) # ideology
 lapop$q5a <- factor(lapop$q5a) # frequency of religious services
 regres <- lm(d6 ~ l1 + q5a, data = lapop) # regression formula
@@ -689,12 +672,11 @@ pander(regress, caption = "Regression Results")
 library(haven)
 library(sjPlot)
 library(jtools)
-lapop2010 <- read_stata("~/Downloads/Analise de dados/LAPOP_2010")
+attach(LAPOP_2010)
 # Transform independent variables(categorical variables) into factor 
-lapop <- lapop2010 # to change the database name
+lapop <- LAPOP_2010 # to change the database name
 lapop$l1 <- factor(lapop$l1) # ideology
 lapop$q5a <- factor(lapop$q5a) # frequency of religious services
-lapop <- lapop2010 # to change the database name
 regres <- lm(d6 ~ l1 + q5a, data = lapop) # regression formula
 # plot
 theme_set(theme_sjplot()) # for white background
@@ -705,14 +687,12 @@ plot_model(regres,title = "Regression", type = "slope") +
 Again, to be sure, graph 18 shows the coefficients of the model. The  first plot is the religion variable (q5a) and the second is ideology (l1), and it shows, in sum, that ideology is not significant, but frequency of religious services is, once thes lines do not touch the _zero_ point.
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
-library(haven)
 library(coefplot)
-lapop2010 <- read_stata("~/Downloads/Analise de dados/LAPOP_2010")
+attach(LAPOP_2010)
 # Transform independent variables(categorical variables) into factor 
-lapop <- lapop2010 # to change the database name
+lapop <- LAPOP_2010 # to change the database name
 lapop$l1 <- factor(lapop$l1) # ideology
 lapop$q5a <- factor(lapop$q5a) # frequency of religious services
-lapop <- lapop2010 # to change the database name
 regres <- lm(d6 ~ l1 + q5a, data = lapop) # regression formula
 coefplot(regres, parm = -1, 
                    title = "Graph 18 - Coefficient Regression Plot") # plot coefficients
@@ -723,9 +703,9 @@ In sum, the model is significant, but only _frequency of religious services_ exp
 To end this section, I would also like to see which one of the religions presented on the survey disapproves the most the right of same sex marriage. Graph 19 shows the distribution of the answer for gay marriage question according to the religion of the respondent. On the graph we see that the answer of Jeovah's Witness, Mormons and Protestants are more concentrated on _strongly disapprove_ than the others, so it seems that these groups resist more to the idea of two people from the same sex getting married. However, it is important to remember catholics are more numerous(they are on the middle), followed by protestants and pentecostals, and there were few atheists and Jeovah's Witnesses people who answered the survey; the other answers have been more evenly distributed, but always tending to _strongly_ rejection. Traditional/Native religions are the ones who _strongly approve_ the most, followed by Kardecist Spiritist and not Christians.
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
-library(haven)
+
 library(ggplot2)
-LAPOP_2010 <- read_stata("~/Downloads/Analise de dados/LAPOP_2010")
+attach(LAPOP_2010)
 
 agg <- aggregate(d6 ~ q3c, data = LAPOP_2010, FUN = mean)
 attach(agg)
@@ -795,7 +775,7 @@ library(ggplot2)
 library(tidyverse)
 library(extrafont)
 # Second, load database
-den_year <- read_excel("~/Downloads/Analise de dados/den_year.xlsx")
+attach(den_year)
 # Third, set the faceting graph
 theme_set(theme_bw())
 den_year %>%
