@@ -11,10 +11,11 @@ install.packages("haven")
 install.packages("ggplot2")
 install.packages("pander")
 install.packages("car")
-install.packages("sjPloot")
+install.packages("sjPlot")
 install.packages("jtools")
 install.packages("coefplot")
 install.packages("ggridges")
+install.packages("readxl")
 
 # Section "Argument"
 # Figure 1- Theory (Diagram)
@@ -79,7 +80,7 @@ library(ggplot2) # to create graphs
 
 # Open database
 Renata_Cavalcanti_bd_tf_ad_ufpe_2018 <- read_stata("~/Downloads/Analise de dados/Renata-Cavalcanti-bd-tf-ad-ufpe-2018")
-LAPOP_2010 <- Renata_Cavalcanti_bd_tf_ad_ufpe_2018
+LAPOP_2010 <- Renata_Cavalcanti_bd_tf_ad_ufpe_2018 # rename
 ## GRAPH 1
 # Call database
 attach(LAPOP_2010)
@@ -246,7 +247,7 @@ ggplot() +
 
 # Open database
 Renata_Cavalcanti_bd2_tf_ad_ufpe_2018 <- read_sav("~/Downloads/Analise de dados/CEL_UFMG_Banco_Elites_Nacionais_Deputados_Federais_2010/Renata-Cavalcanti-bd2-tf-ad-ufpe-2018")
-pela2010 <- Renata_Cavalcanti_bd2_tf_ad_ufpe_2018
+pela2010 <- Renata_Cavalcanti_bd2_tf_ad_ufpe_2018 # rename
 # Graph 8
 # Call database
 attach(pela2010)
@@ -402,8 +403,8 @@ library(pander)
 attach(LAPOP_2010)
 # Transform independent variables(categorical variables) into factor 
 lapop <- LAPOP_2010 # to change the database name
-lapop$l1 <- factor(lapop$l1) # ideology
-lapop$q5a <- factor(lapop$q5a) # frequency of religious services
+lapop$l1 <- factor(LAPOP_2010$l1) # ideology
+lapop$q5a <- factor(LAPOP_2010$q5a) # frequency of religious services
 regres <- lm(d6 ~ l1 + q5a, data = lapop) # regression formula
 # The mean of residuals is (close to) zero
 # Create table
@@ -583,7 +584,8 @@ library(tidyverse)
 library(extrafont)
 # Second, load database
 Renata_Cavalcanti_bd3_tf_ad_ufpe_2018 <- read_excel("~/Downloads/Analise de dados/Renata-Cavalcanti-bd3-tf-ad-ufpe-2018.xlsx")
-Renata_Cavalcanti_bd3_tf_ad_ufpe_2018 <- den_year
+Renata_Cavalcanti_bd3_tf_ad_ufpe_2018 <- den_year # rename
+
 # Third, set the faceting graph
 theme_set(theme_bw())
 den_year %>%
