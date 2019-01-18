@@ -584,7 +584,7 @@ library(tidyverse)
 library(extrafont)
 # Second, load database
 Renata_Cavalcanti_bd3_tf_ad_ufpe_2018 <- read_excel("~/Downloads/Analise de dados/Renata-Cavalcanti-bd3-tf-ad-ufpe-2018.xlsx")
-Renata_Cavalcanti_bd3_tf_ad_ufpe_2018 <- den_year # rename
+den_year <- Renata_Cavalcanti_bd3_tf_ad_ufpe_2018 # rename
 
 # Third, set the faceting graph
 theme_set(theme_bw())
